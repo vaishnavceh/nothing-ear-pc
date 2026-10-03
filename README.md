@@ -6,11 +6,14 @@
 
   <p>
     <img src="https://img.shields.io/badge/Platform-Windows%2010%20%7C%2011-0078D6?style=flat-square&logo=windows" alt="Windows" />
+    <img src="https://img.shields.io/badge/Build-Nightly%20Test-orange?style=flat-square" alt="Nightly Test" />
     <img src="https://img.shields.io/badge/Audio-Dirac%20OPTEO™-E82525?style=flat-square" alt="Dirac OPTEO" />
     <img src="https://img.shields.io/badge/Equalizer-15%2B%20DSP%20Presets-success?style=flat-square" alt="15+ EQ Presets" />
     <img src="https://img.shields.io/badge/License-GPL--3.0-blue?style=flat-square" alt="GPL-3.0" />
   </p>
 </div>
+
+> ⚠️ **Nightly / Test Version**: This is an active preview build. Features and hardware DSP curves are being tested across different Windows configurations and earbud models. Feedback and bug reports are welcome!
 
 ---
 
