@@ -17,5 +17,9 @@ contextBridge.exposeInMainWorld('desktopAPI', {
   isWidgetPinned: () => ipcRenderer.invoke('is-widget-pinned'),
   resizeWidget: (width, height) => ipcRenderer.send('resize-widget', { width, height }),
   onDeviceDetected: (callback) => ipcRenderer.on('device-detected', (event, data) => callback(data)),
+  getAppPreferences: () => ipcRenderer.invoke('get-app-preferences'),
+  setStartWithWindows: (enabled) => ipcRenderer.send('set-start-with-windows', enabled),
+  setWidgetEnabled: (enabled) => ipcRenderer.send('set-widget-enabled', enabled),
+  openIssueReporter: () => ipcRenderer.send('open-issue-reporter'),
   closeApp: () => ipcRenderer.send('close-app')
 });

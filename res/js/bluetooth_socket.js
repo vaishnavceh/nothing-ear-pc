@@ -96,89 +96,114 @@ async function connectSPP(sppPort=null) {
         //read from the serial port
         const reader = sppPort.readable.getReader();
         initDevice();
-        while (sppPort.readable) {
-            const { value, done } = await reader.read();
-            //console.log(value);
-            //print hex string of the received data
-            var string = "";
-            for (let i = 0; i < value.length; i++) {
-                //fill the string with leading zero if needed
-                string += (value[i] < 16 ? "0" : "") + value[i].toString(16);
-            }
-            let rawData = new Uint8Array(value.buffer);
-            //check if first byte is 0x55, else continue
-            if (rawData[0] !== 85 || rawData.length < 10) {
-                continue;
-            }
-            //header is 8 bytes long
-            let header = rawData.slice(0, 6);
-            let command = getCommand(header);
-            console.log(command);
-            if (command === 57345 || command===16391) {
-                readBattery(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
-            }
-            if (command === 57347) {
-                readANC(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
-            }
-            if (command === 16452) {
-                readCustomEQ(rawData);
-            }
-            if (command === 16415 || command === 16464) {
-                readEQ(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
-            }
-            if (command === 16450) {
-                readFirmware(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
-            }
-            if (command === 57357) {
-                readEarFitTestResult(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
-            }
-            if (command === 16416) {
-                readPersonalizedANC(rawData);
-            }
-            if (command === 16398) {
-                readInEar(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
-            }
-            if (command === 16449) {
-                readLatency(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
-            }
-            if (command === 16407) {
-                readLEDCaseColor(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
-            }
-            if (command === 16408) {
-                readGesture(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
-            }
-            if (command === 16414) {
-                readANC(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
-            }
-            if (command === 16460) {
-                read_advanced_eq_status( rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
-            }
-            if (command === 16462) {
-                read_enhanced_bass(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
-            }
+        try {
+            while (sppPort.readable) {
+                const { value, done } = await reader.read();
+                if (done) break;
 
-            if (operationID >= 250) {
-                operationID = 1;
-                operationList = {};
-            }
-            console.log(string);
-            if (done) {
-                // Allow the serial port to be closed later.
-                reader.releaseLock();
-                break;
-            }
-            console.log(value);
+                var string = "";
+                for (let i = 0; i < value.length; i++) {
+                    string += (value[i] < 16 ? "0" : "") + value[i].toString(16);
+                }
+                let rawData = new Uint8Array(value.buffer);
+                if (rawData[0] !== 85 || rawData.length < 10) {
+                    continue;
+                }
+                let header = rawData.slice(0, 6);
+                let command = getCommand(header);
+                console.log(command);
+                if (command === 57345 || command===16391) {
+                    readBattery(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
+                }
+                if (command === 57347) {
+                    readANC(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
+                }
+                if (command === 16452) {
+                    readCustomEQ(rawData);
+                }
+                if (command === 16415 || command === 16464) {
+                    readEQ(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
+                }
+                if (command === 16450) {
+                    readFirmware(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
+                }
+                if (command === 57357) {
+                    readEarFitTestResult(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
+                }
+                if (command === 16416) {
+                    readPersonalizedANC(rawData);
+                }
+                if (command === 16398) {
+                    readInEar(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
+                }
+                if (command === 16449) {
+                    readLatency(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
+                }
+                if (command === 16407) {
+                    readLEDCaseColor(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
+                }
+                if (command === 16408) {
+                    readGesture(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
+                }
+                if (command === 16414) {
+                    readANC(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
+                }
+                if (command === 16460) {
+                    read_advanced_eq_status( rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
+                }
+                if (command === 16462) {
+                    read_enhanced_bass(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
+                }
 
+                if (operationID >= 250) {
+                    operationID = 1;
+                    operationList = {};
+                }
+            }
+        } catch (err) {
+            console.warn("[Bluetooth] Port disconnected or read error:", err);
+        } finally {
+            try { reader.releaseLock(); } catch (e) {}
+            try { await sppPort.close(); } catch (e) {}
+            handleDeviceDisconnect();
         }
     }
 }
 
+function handleDeviceDisconnect() {
+    console.log("[Bluetooth] Device disconnected");
+    SPPsocket = null;
+    if (window.desktopAPI) {
+        window.desktopAPI.sendStateToWidget({
+            connected: false,
+            batteryLeft: '--',
+            batteryRight: '--',
+            batteryCase: '--',
+            ancMode: 1,
+            bassEnhance: 0,
+            isChargingL: false,
+            isChargingR: false,
+            isChargingC: false
+        });
+    }
+    if (typeof setBattery === "function") {
+        setBattery("l", "DISCONNECTED");
+        setBattery("r", "DISCONNECTED");
+        setBattery("c", "DISCONNECTED");
+    }
+}
+
+navigator.serial?.addEventListener('disconnect', () => {
+    handleDeviceDisconnect();
+});
+
 function sendBattery() {
     send(49159, [], "readBattery");
 }
+
 function readBattery(hexString) {
     let connectedDevices = 0;
-    let batteryStatus = { "left": "DISCONNECTED", "right": "DISCONNECTED", "case": "DISCONNECTED" };
+    let batteryStatus = { "left": null, "right": null, "case": null };
     let deviceIdToKey = { 0x02: "left", 0x03: "right", 0x04: "case" };
     let BATTERY_MASK = 127;
     let RECHARGING_MASK = 128;
@@ -188,7 +213,8 @@ function readBattery(hexString) {
     connectedDevices = hexArray[8];
     for (let i = 0; i < connectedDevices; i++) {
         let deviceId = hexArray[9 + (i * 2)];
-        let key = deviceIdToKey[deviceId] || "DISCONNECTED";
+        let key = deviceIdToKey[deviceId];
+        if (!key) continue;
         let batteryLevel = hexArray[10 + (i * 2)] & BATTERY_MASK;
         let isCharging = (hexArray[10 + (i * 2)] & RECHARGING_MASK) === RECHARGING_MASK;
         batteryStatus[key] = {
@@ -197,20 +223,23 @@ function readBattery(hexString) {
         };
     }
 
-    let batteryLeft = batteryStatus["left"]["batteryLevel"];
-    let batteryRight = batteryStatus["right"]["batteryLevel"];
-    let batteryCase = batteryStatus["case"]["batteryLevel"];
-    console.log(batteryLeft);
-    setBattery("l", batteryLeft)
-    setBattery("r", batteryRight)
-    setBattery("c", batteryCase)
+    let batteryLeft = batteryStatus["left"] ? batteryStatus["left"]["batteryLevel"] : "DISCONNECTED";
+    let batteryRight = batteryStatus["right"] ? batteryStatus["right"]["batteryLevel"] : "DISCONNECTED";
+    let batteryCase = batteryStatus["case"] ? batteryStatus["case"]["batteryLevel"] : "DISCONNECTED";
+
+    setBattery("l", batteryLeft);
+    setBattery("r", batteryRight);
+    setBattery("c", batteryCase);
 
     if (window.desktopAPI) {
         window.desktopAPI.sendStateToWidget({
             connected: true,
-            batteryLeft: batteryLeft,
-            batteryRight: batteryRight,
-            batteryCase: batteryCase
+            batteryLeft: batteryLeft === "DISCONNECTED" ? "--" : batteryLeft,
+            batteryRight: batteryRight === "DISCONNECTED" ? "--" : batteryRight,
+            batteryCase: batteryCase === "DISCONNECTED" ? "--" : batteryCase,
+            isChargingL: batteryStatus["left"] ? batteryStatus["left"]["isCharging"] : false,
+            isChargingR: batteryStatus["right"] ? batteryStatus["right"]["isCharging"] : false,
+            isChargingC: batteryStatus["case"] ? batteryStatus["case"]["isCharging"] : false
         });
     }
 }

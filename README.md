@@ -6,14 +6,14 @@
 
   <p>
     <img src="https://img.shields.io/badge/Platform-Windows%2010%20%7C%2011-0078D6?style=flat-square&logo=windows" alt="Windows" />
-    <img src="https://img.shields.io/badge/Build-Nightly%20Test-orange?style=flat-square" alt="Nightly Test" />
+    <img src="https://img.shields.io/badge/Build-v1.0.2.0%20Nightly%20Test-orange?style=flat-square" alt="v1.0.2.0 Nightly Test" />
     <img src="https://img.shields.io/badge/Audio-Dirac%20OPTEO™-E82525?style=flat-square" alt="Dirac OPTEO" />
     <img src="https://img.shields.io/badge/Equalizer-15%2B%20DSP%20Presets-success?style=flat-square" alt="15+ EQ Presets" />
     <img src="https://img.shields.io/badge/License-GPL--3.0-blue?style=flat-square" alt="GPL-3.0" />
   </p>
 </div>
 
-> ⚠️ **Nightly / Test Version**: This is an active preview build. Features and hardware DSP curves are being tested across different Windows configurations and earbud models. Feedback and bug reports are welcome!
+> ⚠️ **Nightly Test Build (v1.0.2.0)**: This is an active preview build. Features, disconnect handling, auto-connect, and hardware DSP curves are being actively tested across different Windows configurations and earbud models. [Report an Issue on GitHub](https://github.com/vaishnavceh/nothing-ear-pc/issues/new) or in the community!
 
 ---
 
@@ -106,7 +106,7 @@ Maps custom 3-band/6-band DSP frequency responses directly to earbud hardware vi
 ### Running Pre-Built Executable
 You can run the portable standalone executable directly without installing Node.js or any dependencies:
 ```
-dist/Nothing Ear PC 1.0.0.exe
+dist/Nothing Ear PC 1.0.2.exe
 ```
 
 ### Building from Source
@@ -131,7 +131,7 @@ npm start
 # 4. Compile standalone Windows portable executable (.exe)
 npm run dist
 ```
-The output executable will be placed in `dist/Nothing Ear PC 1.0.0.exe`.
+The output executable will be placed in `dist/Nothing Ear PC 1.0.2.exe`.
 
 ---
 

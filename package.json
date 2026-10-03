@@ -1,6 +1,6 @@
 {
   "name": "ear-pc-app",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Nothing & CMF Earbuds PC Control Center & Desktop Widget",
   "main": "main.js",
   "scripts": {

@@ -449,7 +449,15 @@
                         </div>
                     </div>
                 </div>
-                <div id="settings_subtitle" class="text-[8px] text-center mt-5 text-gray-500">
+
+                <div class="flex items-center justify-between mt-4 px-6 text-xs text-gray-500">
+                    <span class="font-mono text-[10px] text-gray-400">Nothing Ear PC <span class="text-red-500 font-bold">v1.0.2.0 Nightly</span></span>
+                    <button onclick="if(window.desktopAPI?.openIssueReporter){window.desktopAPI.openIssueReporter()}else{window.open('https://github.com/vaishnavceh/nothing-ear-pc/issues/new','_blank')}" class="text-[11px] text-red-400 hover:text-red-300 underline cursor-pointer bg-transparent border-none">
+                        🐞 Report an Issue / Feedback
+                    </button>
+                </div>
+
+                <div id="settings_subtitle" class="text-[8px] text-center mt-3 text-gray-500">
                     This app is an unofficial app for Nothing(R) Ear Products, Nothing Technology Limited is not responsible for the content of this app or any of its features.<br /> This app is not endorsed by Nothing Technology Limited and is not affiliated with Nothing Technology Limited in any way.
                 </div>
 

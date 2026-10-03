@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, Tray, Menu, screen, globalShortcut, Notification } = require('electron');
+const { app, BrowserWindow, ipcMain, Tray, Menu, screen, globalShortcut, Notification, shell } = require('electron');
 const path = require('path');
 
 // Performance & Fast Startup Optimizations
@@ -10,6 +10,7 @@ let mainWindow = null;
 let widgetWindow = null;
 let tray = null;
 let isWidgetPinned = true;
+let isWidgetEnabled = true;
 let currentState = {
   connected: false,
   modelName: 'Nothing Ear',
@@ -59,7 +60,7 @@ function createMainWindow() {
     minWidth: 800,
     minHeight: 700,
     backgroundColor: '#21201f',
-    title: 'Nothing Ear PC',
+    title: 'Nothing Ear PC v1.0.2.0 (Nightly Test Build)',
     icon: path.join(__dirname, 'res', 'icons', '256x256.png'),
     autoHideMenuBar: true,
     webPreferences: {
@@ -126,9 +127,14 @@ function createWidgetWindow() {
 function createTray() {
   const iconPath = path.join(__dirname, 'res', 'icons', '32x32.png');
   tray = new Tray(iconPath);
-  tray.setToolTip('Nothing Ear PC & Widget');
+  tray.setToolTip('Nothing Ear PC v1.0.2.0 (Nightly)');
 
   const contextMenu = Menu.buildFromTemplate([
+    {
+      label: 'Nothing Ear PC v1.0.2.0 (Nightly)',
+      enabled: false
+    },
+    { type: 'separator' },
     {
       label: 'Open Dashboard',
       click: () => {
@@ -151,6 +157,18 @@ function createTray() {
       }
     },
     {
+      label: 'Enable Desktop Widget',
+      type: 'checkbox',
+      checked: isWidgetEnabled,
+      click: (item) => {
+        isWidgetEnabled = item.checked;
+        if (widgetWindow) {
+          if (isWidgetEnabled) widgetWindow.show();
+          else widgetWindow.hide();
+        }
+      }
+    },
+    {
       label: 'Always On Top (Widget)',
       type: 'checkbox',
       checked: isWidgetPinned,
@@ -168,6 +186,13 @@ function createTray() {
           openAtLogin: item.checked,
           args: ['--hidden']
         });
+      }
+    },
+    { type: 'separator' },
+    {
+      label: '🐞 Report an Issue / Feedback',
+      click: () => {
+        shell.openExternal('https://github.com/vaishnavceh/nothing-ear-pc/issues/new?title=[Nightly+Test+Report]+Issue&body=App+Version:+v1.0.2.0+Nightly');
       }
     },
     { type: 'separator' },
@@ -372,7 +397,32 @@ app.whenReady().then(() => {
     return isWidgetPinned;
   });
 
-  ipcMain.handle('is-widget-pinned', () => isWidgetPinned);
+  ipcMain.handle('get-app-preferences', () => {
+    return {
+      startWithWindows: app.getLoginItemSettings().openAtLogin,
+      widgetEnabled: isWidgetEnabled,
+      version: 'v1.0.2.0 (Nightly Test Build)'
+    };
+  });
+
+  ipcMain.on('set-start-with-windows', (event, enabled) => {
+    app.setLoginItemSettings({
+      openAtLogin: enabled,
+      args: ['--hidden']
+    });
+  });
+
+  ipcMain.on('set-widget-enabled', (event, enabled) => {
+    isWidgetEnabled = enabled;
+    if (widgetWindow && !widgetWindow.isDestroyed()) {
+      if (enabled) widgetWindow.show();
+      else widgetWindow.hide();
+    }
+  });
+
+  ipcMain.on('open-issue-reporter', () => {
+    shell.openExternal('https://github.com/vaishnavceh/nothing-ear-pc/issues/new?title=[Nightly+Test+Report]+Issue&body=App+Version:+v1.0.2.0+Nightly');
+  });
 
   ipcMain.on('close-app', () => {
     app.isQuitting = true;

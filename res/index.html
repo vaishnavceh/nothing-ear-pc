@@ -354,7 +354,7 @@
                 <img src="./icons/512x512.png" alt="Logo" class="logo-img" />
             </div>
             <h1 class="app-title">NOTHING EAR</h1>
-            <p class="app-subtitle">Studio PC Audio Center & Widget</p>
+            <p class="app-subtitle">Studio PC Audio Center & Widget <span style="display:inline-block;margin-left:6px;background:#e82525;color:#fff;font-size:0.65rem;font-family:monospace;padding:2px 6px;border-radius:4px;vertical-align:middle;font-weight:bold;">v1.0.2.0 NIGHTLY</span></p>
         </div>
 
         <!-- Connection & Model Selector Card -->
@@ -394,6 +394,40 @@
                     </svg>
                     WIDGET
                 </button>
+            </div>
+        </div>
+
+        <!-- App Settings & System Preferences Card -->
+        <div class="card" style="margin-top: 14px;">
+            <div class="card-header">
+                <span class="card-title">APP SETTINGS & SYSTEM INTEGRATION</span>
+                <span style="font-family:'Ndot-55',monospace;font-size:0.75rem;color:#888;">PREFERENCES</span>
+            </div>
+            
+            <div style="display:flex;flex-direction:column;gap:12px;margin-top:8px;">
+                <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+                    <span style="font-size:0.85rem;color:#e0e0e0;">⚡ Auto-Connect on Detection / Startup</span>
+                    <input type="checkbox" id="pref-autoconnect" checked onchange="toggleAutoConnect(this.checked)" style="accent-color:#e82525;width:18px;height:18px;cursor:pointer;">
+                </label>
+
+                <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+                    <span style="font-size:0.85rem;color:#e0e0e0;">🪟 Enable Floating Desktop Widget</span>
+                    <input type="checkbox" id="pref-widget-enable" checked onchange="toggleWidgetPref(this.checked)" style="accent-color:#e82525;width:18px;height:18px;cursor:pointer;">
+                </label>
+
+                <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+                    <span style="font-size:0.85rem;color:#e0e0e0;">🚀 Start with Windows (Launch on Boot)</span>
+                    <input type="checkbox" id="pref-boot-enable" onchange="toggleBootPref(this.checked)" style="accent-color:#e82525;width:18px;height:18px;cursor:pointer;">
+                </label>
+
+                <div style="margin-top:4px;display:flex;gap:10px;">
+                    <button onclick="reportIssue()" style="flex:1;background:#241414;border:1px solid #662222;color:#ff9999;padding:9px 14px;border-radius:8px;font-size:0.8rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:0.2s;" onmouseover="this.style.background='#331818'" onmouseout="this.style.background='#241414'">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+                            <path d="M20 8h-2.81c-.45-.78-1.07-1.45-1.82-1.96L17 4.41 15.59 3l-2.17 2.17C12.96 5.06 12.49 5 12 5c-.49 0-.96.06-1.41.17L8.41 3 7 4.41l1.62 1.63C7.88 6.55 7.26 7.22 6.81 8H4v2h2.09c-.05.33-.09.66-.09 1v1H4v2h2v1c0 .34.04.67.09 1H4v2h2.81c1.04 1.79 2.97 3 5.19 3s4.15-1.21 5.19-3H20v-2h-2.09c.05-.33.09-.66.09-1v-1h2v-2h-2v-1c0-.34-.04-.67-.09-1H20V8zm-6 8h-4v-2h4v2zm0-4h-4v-2h4v2z"/>
+                        </svg>
+                        <span>🐞 Report an Issue / Feedback (Nightly Build)</span>
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -440,6 +474,33 @@
     <script src="./js/nothing_connected.js"></script>
     <script src="./js/eq_engine.js"></script>
     <script>
+        window.hasStartedConnecting = false;
+
+        function toggleAutoConnect(enabled) {
+            localStorage.setItem("auto_connect_enabled", enabled ? "true" : "false");
+        }
+
+        function toggleWidgetPref(enabled) {
+            localStorage.setItem("widget_enabled", enabled ? "true" : "false");
+            if (window.desktopAPI?.setWidgetEnabled) {
+                window.desktopAPI.setWidgetEnabled(enabled);
+            }
+        }
+
+        function toggleBootPref(enabled) {
+            if (window.desktopAPI?.setStartWithWindows) {
+                window.desktopAPI.setStartWithWindows(enabled);
+            }
+        }
+
+        function reportIssue() {
+            if (window.desktopAPI?.openIssueReporter) {
+                window.desktopAPI.openIssueReporter();
+            } else {
+                window.open('https://github.com/vaishnavceh/nothing-ear-pc/issues/new?title=[Nightly+Test+Report]+Issue&body=App+Version:+v1.0.2.0+Nightly', '_blank');
+            }
+        }
+
         // Check for cached preference or auto-detection
         window.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
@@ -451,6 +512,15 @@
                 }
             }, 900);
 
+            // Restore preferences
+            const autoConnPref = localStorage.getItem("auto_connect_enabled") !== "false";
+            const autoConnEl = document.getElementById("pref-autoconnect");
+            if (autoConnEl) autoConnEl.checked = autoConnPref;
+
+            const widgetPref = localStorage.getItem("widget_enabled") !== "false";
+            const widgetEl = document.getElementById("pref-widget-enable");
+            if (widgetEl) widgetEl.checked = widgetPref;
+
             const savedModel = localStorage.getItem("user_selected_model");
             if (savedModel && document.getElementById("model-select")) {
                 document.getElementById("model-select").value = savedModel;
@@ -460,8 +530,25 @@
             if (window.desktopAPI) {
                 window.desktopAPI.sendStateToWidget({
                     connected: false,
-                    modelName: "NOTHING EAR PC"
+                    modelName: "NOTHING EAR PC",
+                    batteryLeft: '--',
+                    batteryRight: '--',
+                    batteryCase: '--'
                 });
+
+                if (window.desktopAPI.getAppPreferences) {
+                    window.desktopAPI.getAppPreferences().then((prefs) => {
+                        if (prefs) {
+                            const bootEl = document.getElementById("pref-boot-enable");
+                            if (bootEl && typeof prefs.startWithWindows !== 'undefined') {
+                                bootEl.checked = prefs.startWithWindows;
+                            }
+                            if (widgetEl && typeof prefs.widgetEnabled !== 'undefined') {
+                                widgetEl.checked = prefs.widgetEnabled;
+                            }
+                        }
+                    });
+                }
 
                 if (window.desktopAPI.onDeviceDetected) {
                     window.desktopAPI.onDeviceDetected((data) => {
@@ -479,9 +566,25 @@
                                 localStorage.setItem("user_selected_model", modelKey);
                                 localStorage.setItem("sku", sku);
                             }
+
+                            // Auto-connect on detection if enabled
+                            if (autoConnPref && !window.hasStartedConnecting) {
+                                console.log("[Auto-Connect] Device detected via Bluetooth name, connecting now...");
+                                startConnection();
+                            }
                         }
                     });
                 }
+            }
+
+            // Auto-connect on startup after splash if enabled
+            if (autoConnPref) {
+                setTimeout(() => {
+                    if (!window.hasStartedConnecting) {
+                        console.log("[Auto-Connect] Auto-connecting to earbud port...");
+                        startConnection();
+                    }
+                }, 1300);
             }
         });
 
@@ -494,6 +597,9 @@
         }
 
         async function startConnection() {
+            if (window.hasStartedConnecting) return;
+            window.hasStartedConnecting = true;
+
             const selectEl = document.getElementById("model-select");
             const selectedVal = selectEl.value;
             const btnText = document.getElementById("connect-btn-text");
@@ -515,14 +621,15 @@
                 localStorage.setItem("sku", modelSkuMap[selectedVal] || "54");
             }
 
-            btnText.innerText = "CONNECTING...";
+            if (btnText) btnText.innerText = "CONNECTING...";
             try {
                 if (typeof scanNewDevicesSerial === "function") {
                     await scanNewDevicesSerial();
                 }
             } catch (err) {
                 console.error("Connection error:", err);
-                btnText.innerText = "CONNECT EARBUDS";
+                window.hasStartedConnecting = false;
+                if (btnText) btnText.innerText = "CONNECT EARBUDS";
             }
         }
     </script>

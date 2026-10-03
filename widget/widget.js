@@ -77,6 +77,20 @@ function updateWidgetState(state) {
     statusDot.classList.remove('connected');
     titleEl.innerText = 'DISCONNECTED';
     connectBtn.style.display = 'block';
+
+    // Clear all battery percentages and bars immediately
+    document.getElementById('val-left').innerText = '--';
+    document.getElementById('bar-left').style.width = '0%';
+    document.getElementById('val-case').innerText = '--';
+    document.getElementById('bar-case').style.width = '0%';
+    document.getElementById('val-right').innerText = '--';
+    document.getElementById('bar-right').style.width = '0%';
+
+    document.getElementById('anc-on').classList.remove('active');
+    document.getElementById('anc-trans').classList.remove('active');
+    document.getElementById('anc-off').classList.remove('active');
+    document.getElementById('bass-btn').classList.remove('active');
+    return;
   }
 
   // Battery Left

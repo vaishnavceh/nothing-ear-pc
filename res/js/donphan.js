@@ -526,28 +526,31 @@ function setAncStrengthAdaptive() {
 
 
 function setBattery(side, percentage) {
-    if (typeof percentage == "undefined") {
-        percentage = "DISCONNECTED";
-    }
+    const isDis = (typeof percentage == "undefined" || percentage === "DISCONNECTED" || percentage === "--");
     if (side == "l") {
-        document.getElementById("left_ear").style.opacity = percentage == "DISCONNECTED" ? "0.5" : "1";
-        document.getElementById("left_ear").style.zIndex = percentage == "DISCONNECTED" ? "-1" : "1";
-        document.getElementById("battery-l").style.opacity = percentage == "DISCONNECTED" ? "0" : "1";
-        document.getElementById("battery_bar_l").style.opacity = percentage == "DISCONNECTED" ? "0" : "1";
-        document.getElementById("battery-l").innerHTML = percentage + "% L";
-        document.getElementById("battery_bar_fill_l").style.width = percentage + "%";
+        document.getElementById("left_ear").style.opacity = isDis ? "0.4" : "1";
+        document.getElementById("left_ear").style.zIndex = isDis ? "-1" : "1";
+        document.getElementById("battery-l").style.opacity = isDis ? "0.6" : "1";
+        document.getElementById("battery_bar_l").style.opacity = isDis ? "0.2" : "1";
+        document.getElementById("battery-l").innerHTML = isDis ? "-- L" : percentage + "% L";
+        document.getElementById("battery_bar_fill_l").style.width = isDis ? "0%" : percentage + "%";
     } else if (side == "r") {
-        document.getElementById("right_ear").style.opacity = percentage == "DISCONNECTED" ? "0.5" : "1";
-        document.getElementById("right_ear").style.zIndex = percentage == "DISCONNECTED" ? "-1" : "1";
-        document.getElementById("battery-r").style.opacity = percentage == "DISCONNECTED" ? "0" : "1";
-        document.getElementById("battery_bar_r").style.opacity = percentage == "DISCONNECTED" ? "0" : "1";
-        document.getElementById("battery-r").innerHTML = percentage + "% R";
-        document.getElementById("battery_bar_fill_r").style.width = percentage + "%";
+        document.getElementById("right_ear").style.opacity = isDis ? "0.4" : "1";
+        document.getElementById("right_ear").style.zIndex = isDis ? "-1" : "1";
+        document.getElementById("battery-r").style.opacity = isDis ? "0.6" : "1";
+        document.getElementById("battery_bar_r").style.opacity = isDis ? "0.2" : "1";
+        document.getElementById("battery-r").innerHTML = isDis ? "-- R" : percentage + "% R";
+        document.getElementById("battery_bar_fill_r").style.width = isDis ? "0%" : percentage + "%";
     } else if (side == "c") {
-        document.getElementById("battery-c").innerHTML = percentage == "DISCONNECTED" ? percentage : percentage + "% CASE";
-        document.getElementById("case_ear").style.opacity = percentage == "DISCONNECTED" ? "0.5" : "1";
-        document.getElementById("battery_bar_fill_c").style.opacity = percentage == "DISCONNECTED" ? "0" : "1";
-        document.getElementById("battery_bar_fill_c").style.width = percentage + "%";
+        const cEl = document.getElementById("battery-c");
+        if (cEl) cEl.innerHTML = isDis ? "-- CASE" : percentage + "% CASE";
+        const caseEar = document.getElementById("case_ear");
+        if (caseEar) caseEar.style.opacity = isDis ? "0.4" : "1";
+        const barFillC = document.getElementById("battery_bar_fill_c");
+        if (barFillC) {
+            barFillC.style.opacity = isDis ? "0.2" : "1";
+            barFillC.style.width = isDis ? "0%" : percentage + "%";
+        }
     }
 }
 
