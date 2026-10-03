@@ -344,6 +344,7 @@ async function updateBudsInfo(imageOnly=false) {
                 try {
                     await connectSPP(port);
                     console.log("Connected to Bluetooth device successfully.");
+                    setTimeout(() => { if (typeof sendBattery === "function") sendBattery(); }, 500);
                     return;
                 } catch (error) {
                     window.location.href = window.location.pathname.includes('MainControl') ? '../index.html' : 'index.html';
@@ -476,34 +477,38 @@ function setMacAdressText(mac_adress_text) {
 }
 
 function setInEarCheckbox(status) {
-    if (status == 1) {
-        document.getElementById("in_ear").checked = true;
-    } else {
-        document.getElementById("in_ear").checked = false;
+    const el = document.getElementById("in_ear");
+    if (el) {
+        el.checked = (status == 1 || status === true);
     }
 }
 
 function setInEar() {
-    if (document.getElementById("in_ear").checked) {
-        setInEar_BT(1);
-    } else {
-        setInEar_BT(0);
+    const el = document.getElementById("in_ear");
+    if (el) {
+        if (el.checked) {
+            setInEar_BT(1);
+        } else {
+            setInEar_BT(0);
+        }
     }
 }
 
 function setLatencyModeCheckbox(status) {
-    if (status == 1) {
-        document.getElementById("low_latency").checked = true;
-    } else if (status == 2) {
-        document.getElementById("low_latency").checked = false;
+    const el = document.getElementById("low_latency");
+    if (el) {
+        el.checked = (status == 1 || status === true);
     }
 }
 
 function setLatencyMode() {
-    if (document.getElementById("low_latency").checked) {
-        setLatency(1);
-    } else {
-        setLatency(0);
+    const el = document.getElementById("low_latency");
+    if (el) {
+        if (el.checked) {
+            setLatency(1);
+        } else {
+            setLatency(0);
+        }
     }
 }
 

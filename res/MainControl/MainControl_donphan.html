@@ -473,6 +473,11 @@
     <script type="text/javascript">
         window.addEventListener('load', () => {
             updateBudsInfo();
+            const saved = localStorage.getItem("current_eq_preset") || "dirac";
+            const selectEl = document.getElementById("studio-profile-select");
+            if (selectEl && saved) {
+                selectEl.value = saved;
+            }
         });
     </script>
 </body>

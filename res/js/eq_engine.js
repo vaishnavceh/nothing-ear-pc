@@ -141,15 +141,29 @@ class StudioEQEngine {
 
     console.log(`[StudioEQ] Applying preset: ${preset.name}`, preset.gains);
 
-    // If preset is Dirac OPTEO
-    if (preset.isDirac) {
+    // Hardware built-in preset mappings for Nothing / CMF buds:
+    // 0: Dirac OPTEO / Balanced, 1: Rock, 2: Electronic, 3: Pop, 4: Enhance vocals, 5: Classical
+    const HARDWARE_PRESET_MAP = {
+      "dirac": { mode: 0, buttonPos: 0 },
+      "rock": { mode: 1, buttonPos: 2 },
+      "edm": { mode: 2, buttonPos: 4 },
+      "pop": { mode: 3, buttonPos: 1 },
+      "vocal": { mode: 4, buttonPos: 5 },
+      "classical": { mode: 5, buttonPos: 3 }
+    };
+
+    if (HARDWARE_PRESET_MAP[presetKey]) {
+      const hw = HARDWARE_PRESET_MAP[presetKey];
       if (typeof setListeningMode === "function") {
-        setListeningMode(0);
+        setListeningMode(hw.mode);
+      } else if (typeof setEQ === "function") {
+        setEQ(hw.mode);
       }
       if (typeof setEQfromRead === "function") {
-        setEQfromRead(0, 0);
+        setEQfromRead(hw.mode, hw.buttonPos);
       }
     } else {
+      // Extended Studio Presets (Jazz, Deep Bass, Gaming, Cinematic, Acoustic, Romantic, Semi-Classical, Balanced):
       // Switch hardware listening mode to custom mode (6) and apply DSP gains
       if (typeof setListeningMode === "function") {
         setListeningMode(6);
@@ -161,6 +175,9 @@ class StudioEQEngine {
       }
       if (typeof setCustomEQ === "function") {
         setCustomEQ(preset.gains);
+      }
+      if (typeof setEQfromRead === "function") {
+        setEQfromRead(6, 6);
       }
     }
 

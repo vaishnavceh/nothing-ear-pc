@@ -81,10 +81,13 @@ function updateWidgetState(state) {
     // Clear all battery percentages and bars immediately
     document.getElementById('val-left').innerText = '--';
     document.getElementById('bar-left').style.width = '0%';
+    document.getElementById('cell-left')?.classList.remove('charging');
     document.getElementById('val-case').innerText = '--';
     document.getElementById('bar-case').style.width = '0%';
+    document.getElementById('cell-case')?.classList.remove('charging');
     document.getElementById('val-right').innerText = '--';
     document.getElementById('bar-right').style.width = '0%';
+    document.getElementById('cell-right')?.classList.remove('charging');
 
     document.getElementById('anc-on').classList.remove('active');
     document.getElementById('anc-trans').classList.remove('active');
@@ -94,36 +97,51 @@ function updateWidgetState(state) {
   }
 
   // Battery Left
+  const cellLeft = document.getElementById('cell-left');
   const valLeft = document.getElementById('val-left');
   const barLeft = document.getElementById('bar-left');
-  if (state.batteryLeft && state.batteryLeft !== 'DISCONNECTED' && state.batteryLeft !== '--') {
-    valLeft.innerText = state.batteryLeft + '%';
+  const isChargingL = !!state.isChargingL;
+  const isLeftValid = state.batteryLeft !== undefined && state.batteryLeft !== null && state.batteryLeft !== 'DISCONNECTED' && state.batteryLeft !== '--';
+
+  if (cellLeft) cellLeft.classList.toggle('charging', isChargingL);
+  if (isLeftValid) {
+    valLeft.innerText = (isChargingL ? '⚡ ' : '') + state.batteryLeft + '%';
     barLeft.style.width = Math.min(100, Math.max(0, parseInt(state.batteryLeft))) + '%';
   } else {
-    valLeft.innerText = '--';
-    barLeft.style.width = '0%';
+    valLeft.innerText = isChargingL ? '⚡ CHARGING' : '--';
+    barLeft.style.width = isChargingL ? '50%' : '0%';
   }
 
   // Battery Case
+  const cellCase = document.getElementById('cell-case');
   const valCase = document.getElementById('val-case');
   const barCase = document.getElementById('bar-case');
-  if (state.batteryCase && state.batteryCase !== 'DISCONNECTED' && state.batteryCase !== '--') {
-    valCase.innerText = state.batteryCase + '%';
+  const isChargingC = !!state.isChargingC;
+  const isCaseValid = state.batteryCase !== undefined && state.batteryCase !== null && state.batteryCase !== 'DISCONNECTED' && state.batteryCase !== '--';
+
+  if (cellCase) cellCase.classList.toggle('charging', isChargingC);
+  if (isCaseValid) {
+    valCase.innerText = (isChargingC ? '⚡ ' : '') + state.batteryCase + '%';
     barCase.style.width = Math.min(100, Math.max(0, parseInt(state.batteryCase))) + '%';
   } else {
-    valCase.innerText = '--';
-    barCase.style.width = '0%';
+    valCase.innerText = isChargingC ? '⚡ CHARGING' : '--';
+    barCase.style.width = isChargingC ? '50%' : '0%';
   }
 
   // Battery Right
+  const cellRight = document.getElementById('cell-right');
   const valRight = document.getElementById('val-right');
   const barRight = document.getElementById('bar-right');
-  if (state.batteryRight && state.batteryRight !== 'DISCONNECTED' && state.batteryRight !== '--') {
-    valRight.innerText = state.batteryRight + '%';
+  const isChargingR = !!state.isChargingR;
+  const isRightValid = state.batteryRight !== undefined && state.batteryRight !== null && state.batteryRight !== 'DISCONNECTED' && state.batteryRight !== '--';
+
+  if (cellRight) cellRight.classList.toggle('charging', isChargingR);
+  if (isRightValid) {
+    valRight.innerText = (isChargingR ? '⚡ ' : '') + state.batteryRight + '%';
     barRight.style.width = Math.min(100, Math.max(0, parseInt(state.batteryRight))) + '%';
   } else {
-    valRight.innerText = '--';
-    barRight.style.width = '0%';
+    valRight.innerText = isChargingR ? '⚡ CHARGING' : '--';
+    barRight.style.width = isChargingR ? '50%' : '0%';
   }
 
   // ANC mode pills

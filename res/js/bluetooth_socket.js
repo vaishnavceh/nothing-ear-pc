@@ -67,6 +67,19 @@ async function initDevice() {
     await new Promise(resolve => setTimeout(resolve, 100));
     get_enhanced_bass();
     await new Promise(resolve => setTimeout(resolve, 100));
+
+    // Follow-up battery queries to ensure values & charging state are caught
+    setTimeout(() => { if (SPPsocket && SPPsocket.readable) sendBattery(); }, 600);
+    setTimeout(() => { if (SPPsocket && SPPsocket.readable) sendBattery(); }, 1800);
+
+    // Continuous live polling for battery and charging status every 5 seconds
+    if (!window._batteryPollTimer) {
+        window._batteryPollTimer = setInterval(() => {
+            if (SPPsocket && SPPsocket.readable) {
+                sendBattery();
+            }
+        }, 5000);
+    }
 }
 
 
@@ -137,7 +150,12 @@ async function connectSPP(sppPort=null) {
                     readInEar(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
                 }
                 if (command === 16449) {
-                    readLatency(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
+                    let matchedOp = operationList[rawData[7]];
+                    if (matchedOp === "setCustomEQ") {
+                        console.log("[Bluetooth] Handled ACK for setCustomEQ (ignoring latency parse)");
+                    } else if (rawData.length > 10 && rawData[5] >= 2) {
+                        readLatency(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
+                    }
                 }
                 if (command === 16407) {
                     readLEDCaseColor(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
@@ -173,6 +191,10 @@ async function connectSPP(sppPort=null) {
 function handleDeviceDisconnect() {
     console.log("[Bluetooth] Device disconnected");
     SPPsocket = null;
+    if (window._batteryPollTimer) {
+        clearInterval(window._batteryPollTimer);
+        window._batteryPollTimer = null;
+    }
     if (window.desktopAPI) {
         window.desktopAPI.sendStateToWidget({
             connected: false,
@@ -187,9 +209,9 @@ function handleDeviceDisconnect() {
         });
     }
     if (typeof setBattery === "function") {
-        setBattery("l", "DISCONNECTED");
-        setBattery("r", "DISCONNECTED");
-        setBattery("c", "DISCONNECTED");
+        setBattery("l", "DISCONNECTED", false);
+        setBattery("r", "DISCONNECTED", false);
+        setBattery("c", "DISCONNECTED", false);
     }
 }
 
@@ -227,9 +249,13 @@ function readBattery(hexString) {
     let batteryRight = batteryStatus["right"] ? batteryStatus["right"]["batteryLevel"] : "DISCONNECTED";
     let batteryCase = batteryStatus["case"] ? batteryStatus["case"]["batteryLevel"] : "DISCONNECTED";
 
-    setBattery("l", batteryLeft);
-    setBattery("r", batteryRight);
-    setBattery("c", batteryCase);
+    let isChargingL = !!(batteryStatus["left"] && batteryStatus["left"]["isCharging"]);
+    let isChargingR = !!(batteryStatus["right"] && batteryStatus["right"]["isCharging"]);
+    let isChargingC = !!(batteryStatus["case"] && batteryStatus["case"]["isCharging"]);
+
+    setBattery("l", batteryLeft, isChargingL);
+    setBattery("r", batteryRight, isChargingR);
+    setBattery("c", batteryCase, isChargingC);
 
     if (window.desktopAPI) {
         window.desktopAPI.sendStateToWidget({
@@ -237,9 +263,9 @@ function readBattery(hexString) {
             batteryLeft: batteryLeft === "DISCONNECTED" ? "--" : batteryLeft,
             batteryRight: batteryRight === "DISCONNECTED" ? "--" : batteryRight,
             batteryCase: batteryCase === "DISCONNECTED" ? "--" : batteryCase,
-            isChargingL: batteryStatus["left"] ? batteryStatus["left"]["isCharging"] : false,
-            isChargingR: batteryStatus["right"] ? batteryStatus["right"]["isCharging"] : false,
-            isChargingC: batteryStatus["case"] ? batteryStatus["case"]["isCharging"] : false
+            isChargingL: isChargingL,
+            isChargingR: isChargingR,
+            isChargingC: isChargingC
         });
     }
 }

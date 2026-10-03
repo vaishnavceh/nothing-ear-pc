@@ -36,43 +36,60 @@ function setCustomEQ(array) {
 
 function setEQfromRead(level, pos) {
     console.log("eqlevel: " + level);
-    var buttons = document.getElementsByClassName("eq-button")
+    var buttons = document.getElementsByClassName("eq-button");
+    if (!buttons || buttons.length === 0) return;
     clearButtons();
+
+    const chartEl = document.querySelector("#chart");
+    const indicatorEl = document.getElementById("custom_eq_indicator");
+
     if (level == 0) {
-        document.querySelector("#chart").style.display = "none";
-        document.getElementById("custom_eq_indicator").style.display = "none";
+        if (chartEl) chartEl.style.display = "none";
+        if (indicatorEl) indicatorEl.style.display = "none";
         pos = 0;
     } else if (level == 1) {
-        document.querySelector("#chart").style.display = "none";
-        document.getElementById("custom_eq_indicator").style.display = "none";
+        if (chartEl) chartEl.style.display = "none";
+        if (indicatorEl) indicatorEl.style.display = "none";
         pos = 2;
     } else if (level == 2) {
-        document.querySelector("#chart").style.display = "none";
-        document.getElementById("custom_eq_indicator").style.display = "none";
+        if (chartEl) chartEl.style.display = "none";
+        if (indicatorEl) indicatorEl.style.display = "none";
         pos = 4;
     } else if (level == 3) {
-        document.querySelector("#chart").style.display = "none";
-        document.getElementById("custom_eq_indicator").style.display = "none";
+        if (chartEl) chartEl.style.display = "none";
+        if (indicatorEl) indicatorEl.style.display = "none";
         pos = 1;
     } else if (level == 4) {
-        document.querySelector("#chart").style.display = "none";
-        document.getElementById("custom_eq_indicator").style.display = "none";
+        if (chartEl) chartEl.style.display = "none";
+        if (indicatorEl) indicatorEl.style.display = "none";
         pos = 5;
     } else if (level == 5) {
-        document.querySelector("#chart").style.display = "none";
-        document.getElementById("custom_eq_indicator").style.display = "none";
+        if (chartEl) chartEl.style.display = "none";
+        if (indicatorEl) indicatorEl.style.display = "none";
         pos = 3;
     } else if (level == 6) {
         clearButtons();
         getCustomEQ();
-        document.getElementById("custom_eq_indicator").style.display = "grid";
-        document.querySelector("#chart").style.display = "grid";
+        if (indicatorEl) indicatorEl.style.display = "grid";
+        if (chartEl) chartEl.style.display = "grid";
         setCustom(document.getElementById("buttonEQCustom"));
         updateIndicator();
         pos = 6;
     }
-    buttons[pos].style.backgroundColor = "#ffffff";
-    buttons[pos].style.color = "#000000";
+
+    if (typeof pos !== "undefined" && buttons[pos]) {
+        buttons[pos].style.backgroundColor = "#ffffff";
+        buttons[pos].style.color = "#000000";
+    }
+
+    // Keep the studio profile select dropdown in sync with button clicks
+    const selectEl = document.getElementById("studio-profile-select");
+    if (selectEl) {
+        const modeToKey = { 0: "dirac", 1: "rock", 2: "edm", 3: "pop", 4: "vocal", 5: "classical" };
+        if (modeToKey[level]) {
+            selectEl.value = modeToKey[level];
+        }
+    }
 }
 
 function resetOptions() {

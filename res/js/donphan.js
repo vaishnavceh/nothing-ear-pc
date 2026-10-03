@@ -525,31 +525,63 @@ function setAncStrengthAdaptive() {
 
 
 
-function setBattery(side, percentage) {
+function setBattery(side, percentage, isCharging = false) {
     const isDis = (typeof percentage == "undefined" || percentage === "DISCONNECTED" || percentage === "--");
+    const chargeBadge = isCharging ? "⚡ " : "";
     if (side == "l") {
-        document.getElementById("left_ear").style.opacity = isDis ? "0.4" : "1";
-        document.getElementById("left_ear").style.zIndex = isDis ? "-1" : "1";
-        document.getElementById("battery-l").style.opacity = isDis ? "0.6" : "1";
-        document.getElementById("battery_bar_l").style.opacity = isDis ? "0.2" : "1";
-        document.getElementById("battery-l").innerHTML = isDis ? "-- L" : percentage + "% L";
-        document.getElementById("battery_bar_fill_l").style.width = isDis ? "0%" : percentage + "%";
+        const leftEar = document.getElementById("left_ear");
+        if (leftEar) {
+            leftEar.style.opacity = isDis ? "0.4" : "1";
+            leftEar.style.zIndex = isDis ? "-1" : "1";
+        }
+        const battL = document.getElementById("battery-l");
+        if (battL) {
+            battL.style.opacity = isDis ? "0.6" : "1";
+            battL.innerHTML = isDis ? "-- L" : (chargeBadge + percentage + "% L");
+            battL.style.color = isCharging ? "#4ade80" : "#ffffff";
+        }
+        const barL = document.getElementById("battery_bar_l");
+        if (barL) barL.style.opacity = isDis ? "0.2" : "1";
+        const barFillL = document.getElementById("battery_bar_fill_l");
+        if (barFillL) {
+            barFillL.style.width = isDis ? "0%" : percentage + "%";
+            barFillL.style.backgroundColor = isCharging ? "#4ade80" : "#ffffff";
+            barFillL.style.boxShadow = isCharging ? "0 0 8px rgba(74, 222, 128, 0.8)" : "none";
+        }
     } else if (side == "r") {
-        document.getElementById("right_ear").style.opacity = isDis ? "0.4" : "1";
-        document.getElementById("right_ear").style.zIndex = isDis ? "-1" : "1";
-        document.getElementById("battery-r").style.opacity = isDis ? "0.6" : "1";
-        document.getElementById("battery_bar_r").style.opacity = isDis ? "0.2" : "1";
-        document.getElementById("battery-r").innerHTML = isDis ? "-- R" : percentage + "% R";
-        document.getElementById("battery_bar_fill_r").style.width = isDis ? "0%" : percentage + "%";
+        const rightEar = document.getElementById("right_ear");
+        if (rightEar) {
+            rightEar.style.opacity = isDis ? "0.4" : "1";
+            rightEar.style.zIndex = isDis ? "-1" : "1";
+        }
+        const battR = document.getElementById("battery-r");
+        if (battR) {
+            battR.style.opacity = isDis ? "0.6" : "1";
+            battR.innerHTML = isDis ? "-- R" : (chargeBadge + percentage + "% R");
+            battR.style.color = isCharging ? "#4ade80" : "#ffffff";
+        }
+        const barR = document.getElementById("battery_bar_r");
+        if (barR) barR.style.opacity = isDis ? "0.2" : "1";
+        const barFillR = document.getElementById("battery_bar_fill_r");
+        if (barFillR) {
+            barFillR.style.width = isDis ? "0%" : percentage + "%";
+            barFillR.style.backgroundColor = isCharging ? "#4ade80" : "#ffffff";
+            barFillR.style.boxShadow = isCharging ? "0 0 8px rgba(74, 222, 128, 0.8)" : "none";
+        }
     } else if (side == "c") {
         const cEl = document.getElementById("battery-c");
-        if (cEl) cEl.innerHTML = isDis ? "-- CASE" : percentage + "% CASE";
+        if (cEl) {
+            cEl.innerHTML = isDis ? (isCharging ? "⚡ CHARGING CASE" : "-- CASE") : (chargeBadge + percentage + "% CASE");
+            cEl.style.color = isCharging ? "#4ade80" : "#ffffff";
+        }
         const caseEar = document.getElementById("case_ear");
-        if (caseEar) caseEar.style.opacity = isDis ? "0.4" : "1";
+        if (caseEar) caseEar.style.opacity = isDis && !isCharging ? "0.4" : "1";
         const barFillC = document.getElementById("battery_bar_fill_c");
         if (barFillC) {
-            barFillC.style.opacity = isDis ? "0.2" : "1";
-            barFillC.style.width = isDis ? "0%" : percentage + "%";
+            barFillC.style.opacity = isDis && !isCharging ? "0.2" : "1";
+            barFillC.style.width = isDis ? (isCharging ? "50%" : "0%") : percentage + "%";
+            barFillC.style.backgroundColor = isCharging ? "#4ade80" : "#ffffff";
+            barFillC.style.boxShadow = isCharging ? "0 0 8px rgba(74, 222, 128, 0.8)" : "none";
         }
     }
 }
