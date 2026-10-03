@@ -23,6 +23,21 @@
 
 ---
 
+## 📸 App Preview
+
+<div align="center">
+  <p><b>Studio Audio Dashboard with Dirac OPTEO™ & CMF Buds Detection</b></p>
+  <img src="screenshots/main_controls.png" alt="Main Audio Controls" width="85%" />
+  <br/><br/>
+  <p><b>Floating Desktop Acrylic Widget (with Battery Gauges & Dirac Pill)</b></p>
+  <img src="screenshots/desktop_widget.png" alt="Desktop Widget" width="340" />
+  <br/><br/>
+  <p><b>Nothing OS Dot-Matrix Intro & Device Selection</b></p>
+  <img src="screenshots/intro_dashboard.png" alt="Intro Screen" width="85%" />
+</div>
+
+---
+
 ## ✨ Key Features
 
 ### 🎛️ Floating Desktop Widget & Mini-Pill Mode
