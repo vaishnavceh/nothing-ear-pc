@@ -21,3 +21,4 @@ main.py
 *.log
 .gemini/
 .system_generated/
+scratch/
