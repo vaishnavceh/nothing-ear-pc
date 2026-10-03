@@ -117,11 +117,25 @@ The output executable will be placed in `dist/Nothing Ear PC 1.0.0.exe`.
 
 ---
 
-## 💡 Acknowledgements & Credits
+## 💡 Detailed Credits & Acknowledgements
 
-We extend sincere gratitude and credit to the **[radiance-project/ear-web](https://github.com/radiance-project/ear-web)** open-source project and its contributors.
+This standalone application owes its foundational inspiration, initial protocol discoveries, and early structural understanding to the **[radiance-project/ear-web](https://github.com/radiance-project/ear-web)** open-source project and its dedicated team. We would like to give full, detailed credit to everyone involved in that pioneering effort:
 
-Their early pioneering work reverse-engineering the WebSerial Bluetooth Serial Port Profile (SPP) packets (`aeac4a03-dff5-498f-843a-34487cf133eb`) and documenting the foundational protocol structures of Nothing earbuds provided the initial understanding and groundwork that made this standalone PC application, desktop widget, and studio equalizer suite possible.
+| Contributor / Project | Role & Contribution | Links |
+| :--- | :--- | :--- |
+| **RapidZapper** | **Foundational Protocol & Architecture**: Original creator who conceptualized the project, reverse-engineered the core Bluetooth Serial Port Profile (SPP / RFCOMM) communication packets (`0x55` protocol frames, CRC-16 checks), and authored the initial backend command handlers for Nothing audio devices. | [GitHub Profile](https://github.com/RapidZapper) |
+| **[Bendix](https://www.mrbrickstar.de/)** | **Early Web Frontend & UI**: Designed and developed the initial web interface, UI controls, and visual styling for device interactions. | [Website](https://www.mrbrickstar.de/) • [GitHub](https://github.com/bendixbis) |
+| **[DerrenGoneDigital](https://twitter.com/DerrenDigital)** | **Original Logo & Visual Identity**: Created the distinctive earbud visual logo and design assets for the original project. | [X / Twitter](https://twitter.com/DerrenDigital) |
+| **[Radiance Project](https://github.com/radiance-project)** | **Open-Source Repository**: Maintained the open-source repository at `radiance-project/ear-web`, making early WebSerial explorations public under the GPLv3 license for the community. | [ear-web Repo](https://github.com/radiance-project/ear-web) • [ear-pc Repo](https://github.com/radiance-project/ear-pc) |
+
+### 🛠️ Evolution in this Standalone Studio Edition
+Building upon that early groundwork, this repository (**Nothing Ear PC**) represents a full evolution and architectural redesign:
+* **Standalone Windows Executable**: Completely decoupled from browser tabs into a portable, single-file Windows executable (`.exe`).
+* **Hardware Dirac OPTEO™ Integration**: Native reverse-engineered command mapping (`0xF01D`) enabling Dirac OPTEO acoustic clarity for CMF Buds 2 and Buds Pro 2.
+* **15+ Studio DSP Equalizer Profiles**: A custom studio audio engine (`eq_engine.js`) providing hardware-mapped acoustic presets (Jazz, Rock, Classical, Semi-Classical, Romantic, Vocal, Pop, EDM, Deep Bass, Gaming, Cinematic, Acoustic).
+* **Floating Desktop Widget & Mini-Pill**: An always-on-top transparent desktop widget with compact mini-pill mode ($320\times50$), instant state hydration (0ms load), and live battery readouts.
+* **Intelligent Device Identification Engine**: Fixed critical detection bugs to properly identify CMF Buds 2 via Windows Bluetooth Friendly Names without defaulting to Ear (1).
+* **Global Desktop Shortcuts & Toasts**: Seamless OS integration with background tray support and native Windows notifications.
 
 ---
 
