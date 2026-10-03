@@ -422,6 +422,29 @@
                                     Custom
                                 </button>
 
+                                <div class="mt-4 pt-3 border-t border-[#2a2928]">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-xs font-bold text-gray-300 tracking-wider">STUDIO SOUND PROFILES</span>
+                                        <span class="text-[10px] text-red-500 bg-[#331111] px-2 py-0.5 rounded-full font-mono">15+ DSP PRESETS</span>
+                                    </div>
+                                    <select id="studio-profile-select" onchange="window.studioEQ && window.studioEQ.applyPreset(this.value)" class="w-full bg-[#141312] text-white text-xs border border-gray-700 rounded-lg p-2 focus:outline-none focus:border-red-500">
+                                        <option value="dirac">Dirac OPTEO™ (Hardware Acoustic Calibration)</option>
+                                        <option value="jazz">🎷 Jazz (Warm Brass & Natural Double-Bass)</option>
+                                        <option value="rock">🎸 Rock (Punchy Kick & Guitar Attack)</option>
+                                        <option value="classical">🎻 Classical (Linear Orchestral Staging)</option>
+                                        <option value="semi_classical">🪕 Semi-Classical (Resonant Body & Vocal)</option>
+                                        <option value="romantic">🌹 Romantic (Intimate & Smooth Fatigue-Free)</option>
+                                        <option value="vocal">🎤 Vocal / Vocilar (Speech & Dialogue Clarity)</option>
+                                        <option value="pop">🎧 Pop (Dynamic Rhythm & Bright Treble)</option>
+                                        <option value="edm">⚡ Electronic / EDM (Sub-Bass Rumble)</option>
+                                        <option value="deep_bass">🔊 Deep Bass (Sub-Woofer Power)</option>
+                                        <option value="gaming">🎮 Gaming / FPS (Footsteps & Spatial Cues)</option>
+                                        <option value="cinematic">🎬 Cinematic (Expansive Movie Soundstage)</option>
+                                        <option value="acoustic">🪵 Acoustic (Warm Wooden Resonance)</option>
+                                        <option value="balanced">⚖️ Balanced (Flat Studio Monitor)</option>
+                                    </select>
+                                </div>
+
                             </div>
                         </div>
                     </div>

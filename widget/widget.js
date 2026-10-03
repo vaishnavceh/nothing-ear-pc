@@ -21,6 +21,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
+  let isMiniMode = false;
+  const miniBtn = document.getElementById('mini-btn');
+  if (miniBtn) {
+    miniBtn.addEventListener('click', () => {
+      isMiniMode = !isMiniMode;
+      document.body.classList.toggle('mini-mode', isMiniMode);
+      if (isMiniMode) {
+        window.desktopAPI?.resizeWidget(320, 50);
+        miniBtn.classList.add('active');
+      } else {
+        window.desktopAPI?.resizeWidget(360, 185);
+        miniBtn.classList.remove('active');
+      }
+    });
+  }
+
   // Check initial pinned state
   const isPinned = await window.desktopAPI?.isWidgetPinned();
   if (isPinned) {
@@ -29,6 +45,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     pinBtn.classList.remove('active');
   }
 
+  // Instant state hydration (0ms perceived load)
+  try {
+    const cached = localStorage.getItem('last_widget_state');
+    if (cached) {
+      updateWidgetState(JSON.parse(cached));
+    }
+  } catch (e) {}
+
   // Subscribe to real-time state updates from main process / device
   window.desktopAPI?.onStateUpdate((state) => {
     updateWidgetState(state);
@@ -36,6 +60,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 function updateWidgetState(state) {
+  if (!state) return;
+  try {
+    localStorage.setItem('last_widget_state', JSON.stringify(state));
+  } catch (e) {}
   // Connection status & Title
   const statusDot = document.getElementById('status-dot');
   const titleEl = document.getElementById('device-title');
@@ -115,7 +143,23 @@ function updateWidgetState(state) {
   }
 }
 
-const EQ_PRESET_CYCLE = ["dirac", "jazz", "rock", "classical", "semi_classical", "romantic", "vocal", "pop", "edm", "gaming"];
+const EQ_PRESET_CYCLE = ["dirac", "jazz", "rock", "classical", "semi_classical", "romantic", "vocal", "pop", "edm", "deep_bass", "gaming", "cinematic", "acoustic", "balanced"];
+const EQ_LABEL_MAP = {
+  dirac: "DIRAC",
+  jazz: "JAZZ",
+  rock: "ROCK",
+  classical: "CLASSIC",
+  semi_classical: "SEMI-CL",
+  romantic: "ROMANCE",
+  vocal: "VOCAL",
+  pop: "POP",
+  edm: "EDM",
+  deep_bass: "BASS+",
+  gaming: "GAMING",
+  cinematic: "CINEMA",
+  acoustic: "ACOUST",
+  balanced: "BALANCE"
+};
 let currentEqIndex = 0;
 
 function cycleStudioEQ() {
@@ -124,7 +168,7 @@ function cycleStudioEQ() {
   window.desktopAPI?.sendWidgetCommand('cycleEQ', key);
   const eqNameEl = document.getElementById("eq-name");
   if (eqNameEl) {
-    eqNameEl.innerText = key.toUpperCase().slice(0, 8);
+    eqNameEl.innerText = EQ_LABEL_MAP[key] || key.toUpperCase().slice(0, 7);
   }
 }
 

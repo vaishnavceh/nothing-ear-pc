@@ -15,6 +15,7 @@ contextBridge.exposeInMainWorld('desktopAPI', {
   hideWidgetWindow: () => ipcRenderer.send('hide-widget-window'),
   togglePinWidget: () => ipcRenderer.invoke('toggle-pin-widget'),
   isWidgetPinned: () => ipcRenderer.invoke('is-widget-pinned'),
+  resizeWidget: (width, height) => ipcRenderer.send('resize-widget', { width, height }),
   onDeviceDetected: (callback) => ipcRenderer.on('device-detected', (event, data) => callback(data)),
   closeApp: () => ipcRenderer.send('close-app')
 });

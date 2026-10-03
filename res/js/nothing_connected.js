@@ -192,7 +192,27 @@ function getSerialNumber(hexPayload) {
 
 function processSerial(serial) {
     if (serial === null) {
-        //could be ear (1)
+        const detected = localStorage.getItem("detected_model") || localStorage.getItem("user_selected_model");
+        if (detected && detected !== "auto" && detected !== "one") {
+            const modelSkuMap = {
+                "donphan": "54",
+                "espeon": "76",
+                "twos": "61",
+                "cleffa": "63",
+                "two": "17",
+                "sticks": "14",
+                "flaaffy": "11200005",
+                "corsola": "30",
+                "one": "01"
+            };
+            const sku = modelSkuMap[detected] || "54";
+            const model = getModelFromSKU(sku);
+            if (model) {
+                switchViewFromModelID(model, sku);
+                return;
+            }
+        }
+        // If not detected as modern Nothing/CMF, check ear (1)
         requestFirmwareEarOne();
         return;
     }
@@ -204,46 +224,49 @@ function processSerial(serial) {
         return;
     }
     if (headSerial === "MA") {
-        //document.getElementById("device_container").innerHTML = '<div class="device-info"><p>Device Found</p><p>Serial Number: ' + serial + '</p></div>';
         let year = serial.substring(6, 8);
         if (year === "22" || year === "23") {
             //Ear (stick)
             SKU = "14";
         } else if (year === "24") {
-            //Ear (open) TODO: Find a better way to identify both
+            //Ear (open)
             SKU = "11200005";
         }
     }
     else if (headSerial === "SH") {
-        //document.getElementById("device_container").innerHTML = '<div class="device-info"><p>Device Found</p><p>Serial Number: ' + serial + '</p></div>';
         SKU = serial.substring(4, 6);
     }
     else if (headSerial === "13") {
-        //document.getElementById("device_container").innerHTML = '<div class="device-info"><p>Device Found</p><p>Serial Number: ' + serial + '</p></div>';
         SKU = serial.substring(4, 6);
     }
     else {
-        //document.getElementById("device_container").innerHTML = '<div class="device-info"><p>Incompatible Device</p><p>Serial Number: ' + serial + '</p></div>';
+        // Unrecognized serial prefix - check detected or selected model
+        const fallbackModelKey = localStorage.getItem("detected_model") || localStorage.getItem("user_selected_model") || "donphan";
+        const modelSkuMap = {
+            "donphan": "54",
+            "espeon": "76",
+            "twos": "61",
+            "cleffa": "63",
+            "two": "17",
+            "sticks": "14",
+            "flaaffy": "11200005",
+            "corsola": "30",
+            "one": "01"
+        };
+        const fallbackSku = modelSkuMap[fallbackModelKey] || "54";
+        let fallbackModel = getModelFromSKU(fallbackSku);
+        if (fallbackModel) {
+            switchViewFromModelID(fallbackModel, fallbackSku);
+            return;
+        }
         return;
     }
     let model = getModelFromSKU(SKU);
     console.log(model);
 
     if (model) {
-       // document.getElementById("device_container").innerHTML += '<div class="device-info"><p>Model: ' + model.name + '</p></div>';
         if (model.leftImg === "") {
-            /*document.getElementById("device_container").innerHTML += `<div class="image-row">
-                    <div class="image-container"><img src="${model.duoImg}" alt="duo" class="responsive-img" /></div>
-                   </div>`;*/
             return;
-        }
-        else {
-           /* document.getElementById("device_container").innerHTML += `
-                <div class="image-row">
-                    <div class="image-container"><img src="${model.leftImg}" alt="left_earbud" class="responsive-img" /></div>
-                    <div class="image-container"><img src="${model.caseImg}" alt="case" class="responsive-img" /></div>
-                    <div class="image-container"><img src="${model.rightImg}" alt="right_earbud" class="responsive-img" /></div>
-                </div>`;*/
         }
     }
     switchViewFromModelID(model, SKU);
@@ -279,9 +302,11 @@ async function scanNewDevicesSerial() {
         localStorage.setItem("sppPort", sppPort);
         SPPsocket = sppPort;
 
-        // Check if user selected a model directly or if device is CMF Buds
+        // Check if user selected a model directly or if device was detected via name
         const userSelected = localStorage.getItem("user_selected_model");
-        if (userSelected && userSelected !== "auto") {
+        const detectedModel = localStorage.getItem("detected_model");
+        const targetModelKey = (userSelected && userSelected !== "auto") ? userSelected : detectedModel;
+        if (targetModelKey && targetModelKey !== "auto") {
             const modelSkuMap = {
                 "donphan": "54",
                 "espeon": "76",
@@ -293,13 +318,37 @@ async function scanNewDevicesSerial() {
                 "corsola": "30",
                 "one": "01"
             };
-            const sku = modelSkuMap[userSelected] || "54";
+            const sku = modelSkuMap[targetModelKey] || "54";
             const model = getModelFromSKU(sku);
             if (model) {
                 switchViewFromModelID(model, sku);
                 return;
             }
         }
+
+        let hasSwitched = false;
+        setTimeout(() => {
+            if (!hasSwitched) {
+                const fallbackKey = localStorage.getItem("detected_model") || localStorage.getItem("user_selected_model") || "donphan";
+                const modelSkuMap = {
+                    "donphan": "54",
+                    "espeon": "76",
+                    "twos": "61",
+                    "cleffa": "63",
+                    "two": "17",
+                    "sticks": "14",
+                    "flaaffy": "11200005",
+                    "corsola": "30",
+                    "one": "01"
+                };
+                const sku = modelSkuMap[fallbackKey] || "54";
+                const model = getModelFromSKU(sku);
+                if (model) {
+                    hasSwitched = true;
+                    switchViewFromModelID(model, sku);
+                }
+            }
+        }, 1500);
 
         //read from the serial port
         const reader = sppPort.readable.getReader();

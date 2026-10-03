@@ -328,10 +328,23 @@
             color: #555555;
             line-height: 1.4;
         }
+        @keyframes pulseBar {
+            from { opacity: 0.3; transform: scaleX(0.7); }
+            to { opacity: 1; transform: scaleX(1.3); }
+        }
     </style>
 </head>
 
 <body>
+    <!-- Dot-Matrix Boot Splash -->
+    <div id="boot-splash" style="position:fixed;inset:0;background:#141312;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 0.4s ease, visibility 0.4s ease;">
+        <div style="font-family:'Ndot-55',monospace;font-size:3rem;letter-spacing:6px;color:#fff;display:flex;align-items:center;gap:8px;">
+            <span>(</span><span style="color:#e82525;">E</span><span>A</span><span>R</span><span>)</span>
+        </div>
+        <div style="font-family:'Ndot-55',monospace;font-size:0.9rem;letter-spacing:3px;color:#888888;margin-top:14px;">STUDIO PC EDITION</div>
+        <div style="margin-top:24px;width:36px;height:4px;background:#e82525;border-radius:2px;animation:pulseBar 0.8s infinite alternate;"></div>
+    </div>
+
     <div class="ambient-glow"></div>
 
     <div class="container">
@@ -429,6 +442,15 @@
     <script>
         // Check for cached preference or auto-detection
         window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                const splash = document.getElementById('boot-splash');
+                if (splash) {
+                    splash.style.opacity = '0';
+                    splash.style.visibility = 'hidden';
+                    setTimeout(() => splash.remove(), 400);
+                }
+            }, 900);
+
             const savedModel = localStorage.getItem("user_selected_model");
             if (savedModel && document.getElementById("model-select")) {
                 document.getElementById("model-select").value = savedModel;
@@ -446,18 +468,16 @@
                         const badge = document.getElementById("detected-text");
                         if (badge && data?.displayName) {
                             badge.innerText = "FOUND: " + data.displayName.toUpperCase();
-                            const name = data.displayName.toLowerCase();
+                            const modelKey = data.modelKey || "donphan";
+                            const sku = data.sku || "54";
+                            localStorage.setItem("detected_model", modelKey);
+                            localStorage.setItem("detected_sku", sku);
+                            
                             const selectEl = document.getElementById("model-select");
                             if (selectEl) {
-                                if (name.includes('buds 2') || name.includes('cmf buds')) {
-                                    selectEl.value = "donphan";
-                                    localStorage.setItem("user_selected_model", "donphan");
-                                    localStorage.setItem("sku", "54");
-                                } else if (name.includes('pro 2')) {
-                                    selectEl.value = "espeon";
-                                    localStorage.setItem("user_selected_model", "espeon");
-                                    localStorage.setItem("sku", "76");
-                                }
+                                selectEl.value = modelKey;
+                                localStorage.setItem("user_selected_model", modelKey);
+                                localStorage.setItem("sku", sku);
                             }
                         }
                     });

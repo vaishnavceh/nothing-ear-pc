@@ -146,12 +146,21 @@ class StudioEQEngine {
       if (typeof setListeningMode === "function") {
         setListeningMode(0);
       }
+      if (typeof setEQfromRead === "function") {
+        setEQfromRead(0, 0);
+      }
     } else {
-      // Map to hardware custom EQ (Bass, Mid, Treble)
+      // Switch hardware listening mode to custom mode (6) and apply DSP gains
+      if (typeof setListeningMode === "function") {
+        setListeningMode(6);
+      }
       if (typeof setCustomEQ_BT === "function") {
         setCustomEQ_BT(preset.gains);
       } else if (typeof setEQ === "function") {
         setEQ(0); // Balanced base
+      }
+      if (typeof setCustomEQ === "function") {
+        setCustomEQ(preset.gains);
       }
     }
 
@@ -172,6 +181,11 @@ class StudioEQEngine {
     if (labelBass) labelBass.innerText = preset.gains[0];
     if (labelMid) labelMid.innerText = preset.gains[1];
     if (labelTreble) labelTreble.innerText = preset.gains[2];
+
+    const selectEl = document.getElementById("studio-profile-select");
+    if (selectEl) {
+      selectEl.value = presetKey;
+    }
 
     return preset;
   }

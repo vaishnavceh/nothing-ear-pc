@@ -1,6 +1,11 @@
 const { app, BrowserWindow, ipcMain, Tray, Menu, screen, globalShortcut, Notification } = require('electron');
 const path = require('path');
 
+// Performance & Fast Startup Optimizations
+app.commandLine.appendSwitch('enable-gpu-rasterization');
+app.commandLine.appendSwitch('v8-cache-options', 'code');
+app.commandLine.appendSwitch('disable-http-cache');
+
 let mainWindow = null;
 let widgetWindow = null;
 let tray = null;
@@ -210,9 +215,43 @@ app.whenReady().then(() => {
     if (matchingPort) {
       console.log('Auto-connecting to matched port:', matchingPort);
       const devName = matchingPort.displayName || matchingPort.portName || 'CMF Buds 2';
+      let detectedModelKey = 'donphan';
+      let detectedSku = '54';
+      const lower = devName.toLowerCase();
+      if (lower.includes('pro 2')) {
+        detectedModelKey = 'espeon';
+        detectedSku = '76';
+      } else if (lower.includes('buds 2') || lower.includes('cmf buds') || (lower.includes('cmf') && lower.includes('buds'))) {
+        detectedModelKey = 'donphan';
+        detectedSku = '54';
+      } else if (lower.includes('buds pro')) {
+        detectedModelKey = 'corsola';
+        detectedSku = '30';
+      } else if (lower.includes('ear (a)') || lower.includes('ear a')) {
+        detectedModelKey = 'cleffa';
+        detectedSku = '63';
+      } else if (lower.includes('ear (2)') || lower.includes('ear 2')) {
+        detectedModelKey = 'two';
+        detectedSku = '17';
+      } else if (lower.includes('ear (stick)') || lower.includes('stick')) {
+        detectedModelKey = 'sticks';
+        detectedSku = '14';
+      } else if (lower.includes('neckband')) {
+        detectedModelKey = 'crobat';
+        detectedSku = '48';
+      } else if (lower.includes('ear (1)') || lower.includes('ear 1')) {
+        detectedModelKey = 'one';
+        detectedSku = '01';
+      } else if (lower.includes('ear')) {
+        detectedModelKey = 'twos';
+        detectedSku = '61';
+      }
+
       if (mainWindow && !mainWindow.isDestroyed()) {
         mainWindow.webContents.send('device-detected', {
-          displayName: devName
+          displayName: devName,
+          modelKey: detectedModelKey,
+          sku: detectedSku
         });
       }
       callback(matchingPort.portId);
@@ -265,7 +304,7 @@ app.whenReady().then(() => {
       showToastNotification('Bass Enhance', nextBass > 0 ? 'Bass Boost Enabled' : 'Bass Boost Off');
     });
 
-    const EQ_PRESETS = ['dirac', 'jazz', 'rock', 'classical', 'semi_classical', 'romantic', 'vocal', 'pop', 'edm', 'gaming'];
+    const EQ_PRESETS = ['dirac', 'jazz', 'rock', 'classical', 'semi_classical', 'romantic', 'vocal', 'pop', 'edm', 'deep_bass', 'gaming', 'cinematic', 'acoustic', 'balanced'];
     let currentEqIdx = 0;
     globalShortcut.register('CommandOrControl+Shift+E', () => {
       currentEqIdx = (currentEqIdx + 1) % EQ_PRESETS.length;
@@ -316,6 +355,12 @@ app.whenReady().then(() => {
   ipcMain.on('hide-widget-window', () => {
     if (widgetWindow) {
       widgetWindow.hide();
+    }
+  });
+
+  ipcMain.on('resize-widget', (event, { width, height }) => {
+    if (widgetWindow && !widgetWindow.isDestroyed()) {
+      widgetWindow.setSize(width, height);
     }
   });
 
