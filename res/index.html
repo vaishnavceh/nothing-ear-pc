@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en" translate="no">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nothing Ear PC - Studio Control Center</title>
+    <link rel="icon" href="icons/16x16.png" />
+    <link rel="manifest" href="manifest.json" crossorigin="use-credentials" />
+    <link href="./global.css" rel="stylesheet" />
+    <style>
+        @font-face {
+            font-family: 'Ndot-55';
+            src: url('./fonts/ndot_55.otf') format('opentype');
+        }
+        @font-face {
+            font-family: 'SpaceGrotesk';
+            src: url('./fonts/space_grotesk_medium.ttf') format('truetype');
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #141312;
+            color: #ffffff;
+            font-family: 'SpaceGrotesk', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 30px 20px;
+            overflow-x: hidden;
+        }
+
+        /* Ambient Glow */
+        .ambient-glow {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 400px;
+            height: 250px;
+            background: radial-gradient(circle, rgba(232, 37, 37, 0.12) 0%, rgba(20, 19, 18, 0) 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 680px;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .logo-wrap {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 12px;
+        }
+
+        .logo-img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            box-shadow: 0 0 24px rgba(232, 37, 37, 0.25);
+            transition: transform 0.3s ease;
+        }
+
+        .logo-img:hover {
+            transform: scale(1.05);
+        }
+
+        .app-title {
+            font-family: 'Ndot-55', monospace;
+            font-size: 2.2rem;
+            letter-spacing: 2px;
+            color: #f5f5f5;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .app-subtitle {
+            font-size: 0.95rem;
+            color: #888888;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* Device Card */
+        .card {
+            width: 100%;
+            background: rgba(28, 27, 26, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 18px;
+            padding: 22px 24px;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            font-family: 'Ndot-55', monospace;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+            color: #e5e5e5;
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #aaaaaa;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #e82525;
+            box-shadow: 0 0 6px #e82525;
+        }
+
+        /* Model Selector */
+        .select-label {
+            font-size: 0.8rem;
+            color: #777777;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: -8px;
+        }
+
+        .model-select {
+            width: 100%;
+            padding: 12px 14px;
+            background: #1c1b1a;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 12px;
+            color: #ffffff;
+            font-size: 0.95rem;
+            font-family: 'SpaceGrotesk', sans-serif;
+            outline: none;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        .model-select:focus {
+            border-color: #e82525;
+        }
+
+        .model-select option {
+            background: #1c1b1a;
+            color: #ffffff;
+        }
+
+        /* Buttons Row */
+        .btn-row {
+            display: flex;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .primary-btn {
+            flex: 2;
+            padding: 14px 20px;
+            background: #e82525;
+            color: #ffffff;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            box-shadow: 0 4px 15px rgba(232, 37, 37, 0.35);
+            transition: transform 0.15s, background-color 0.2s, box-shadow 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .primary-btn:hover {
+            transform: scale(1.02);
+            background: #ff3333;
+            box-shadow: 0 6px 20px rgba(232, 37, 37, 0.5);
+        }
+
+        .secondary-btn {
+            flex: 1;
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.08);
+            color: #dddddd;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            letter-spacing: 0.5px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .secondary-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Feature Pills Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            width: 100%;
+        }
+
+        .feature-box {
+            background: rgba(35, 34, 33, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .feature-tag {
+            font-family: 'Ndot-55', monospace;
+            font-size: 0.85rem;
+            color: #e82525;
+            letter-spacing: 0.5px;
+        }
+
+        .feature-tag.blue {
+            color: #0080ff;
+        }
+
+        .feature-desc {
+            font-size: 0.8rem;
+            color: #aaaaaa;
+            line-height: 1.3;
+        }
+
+        /* Hotkey Sheet */
+        .hotkeys-card {
+            width: 100%;
+            background: rgba(22, 21, 20, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 14px;
+            padding: 14px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .hotkey-title {
+            font-size: 0.8rem;
+            color: #888888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .hotkey-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .hotkey-pill {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 6px;
+            padding: 4px 8px;
+            font-size: 0.75rem;
+            color: #cccccc;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .key {
+            background: #2a2928;
+            padding: 1px 5px;
+            border-radius: 4px;
+            color: #ffffff;
+            font-weight: 700;
+            font-family: monospace;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 15px;
+            text-align: center;
+            font-size: 0.75rem;
+            color: #555555;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="ambient-glow"></div>
+
+    <div class="container">
+        <!-- Brand Header -->
+        <div class="header">
+            <div class="logo-wrap">
+                <img src="./icons/512x512.png" alt="Logo" class="logo-img" />
+            </div>
+            <h1 class="app-title">NOTHING EAR</h1>
+            <p class="app-subtitle">Studio PC Audio Center & Widget</p>
+        </div>
+
+        <!-- Connection & Model Selector Card -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">DEVICE CONNECTION</span>
+                <span class="status-badge" id="detected-badge">
+                    <span class="status-dot"></span>
+                    <span id="detected-text">AUTO-DETECT READY</span>
+                </span>
+            </div>
+
+            <div class="select-label">SELECT YOUR EARBUD MODEL</div>
+            <select id="model-select" class="model-select">
+                <option value="auto">✨ Auto-Detect (CMF Buds 2 / Nothing Ear)</option>
+                <option value="donphan">CMF Buds 2 / CMF Buds (Dirac OPTEO™)</option>
+                <option value="espeon">CMF Buds Pro 2 (Dirac OPTEO™)</option>
+                <option value="twos">Nothing Ear (2024 / Ear 3)</option>
+                <option value="cleffa">Nothing Ear (a)</option>
+                <option value="two">Nothing Ear (2)</option>
+                <option value="sticks">Nothing Ear (stick)</option>
+                <option value="flaaffy">Nothing Ear (open)</option>
+                <option value="corsola">CMF Buds Pro</option>
+                <option value="one">Nothing Ear (1)</option>
+            </select>
+
+            <div class="btn-row">
+                <button class="primary-btn" id="connect-btn" onclick="startConnection()">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9v-2h2v2zm0-4H9V7h2v5zm4 4h-2v-2h2v2zm0-4h-2V7h2v5z"/>
+                    </svg>
+                    <span id="connect-btn-text">CONNECT EARBUDS</span>
+                </button>
+                <button class="secondary-btn" id="widget-btn" onclick="openWidgetDirectly()" title="Launch Desktop Widget">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14H5v-4h7v4zm7 0h-6v-4h6v4zm0-6H5V7h14v4z"/>
+                    </svg>
+                    WIDGET
+                </button>
+            </div>
+        </div>
+
+        <!-- Studio Features Showcase -->
+        <div class="features-grid">
+            <div class="feature-box">
+                <span class="feature-tag blue">DIRAC OPTEO™</span>
+                <span class="feature-desc">Hardware-calibrated acoustic clarity on CMF Buds 2 & Buds Pro 2.</span>
+            </div>
+            <div class="feature-box">
+                <span class="feature-tag">STUDIO EQUALIZER</span>
+                <span class="feature-desc">15+ presets: Jazz, Rock, Classical, Romantic, Vocal, EDM & Gaming.</span>
+            </div>
+            <div class="feature-box">
+                <span class="feature-tag">FLOATING WIDGET</span>
+                <span class="feature-desc">Always-on-top desktop dock with live battery and quick profile switches.</span>
+            </div>
+            <div class="feature-box">
+                <span class="feature-tag">ULTRA LOW LATENCY</span>
+                <span class="feature-desc">Instant sound sync for gaming, streaming & audio editing.</span>
+            </div>
+        </div>
+
+        <!-- Hotkeys Quick Reference -->
+        <div class="hotkeys-card">
+            <span class="hotkey-title">GLOBAL DESKTOP SHORTCUTS</span>
+            <div class="hotkey-list">
+                <div class="hotkey-pill"><span class="key">Ctrl+Shift+A</span> ANC Cycle</div>
+                <div class="hotkey-pill"><span class="key">Ctrl+Shift+D</span> Dirac OPTEO</div>
+                <div class="hotkey-pill"><span class="key">Ctrl+Shift+E</span> Next EQ Preset</div>
+                <div class="hotkey-pill"><span class="key">Ctrl+Shift+B</span> Bass Boost</div>
+                <div class="hotkey-pill"><span class="key">Ctrl+Shift+W</span> Toggle Widget</div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            Nothing Ear PC & Desktop Widget • Standalone Studio Edition<br />
+            Designed for Nothing & CMF Audio Hardware
+        </div>
+    </div>
+
+    <script src="./js/control.js"></script>
+    <script src="./js/nothing_connected.js"></script>
+    <script src="./js/eq_engine.js"></script>
+    <script>
+        // Check for cached preference or auto-detection
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedModel = localStorage.getItem("user_selected_model");
+            if (savedModel && document.getElementById("model-select")) {
+                document.getElementById("model-select").value = savedModel;
+            }
+
+            // Sync with Desktop API
+            if (window.desktopAPI) {
+                window.desktopAPI.sendStateToWidget({
+                    connected: false,
+                    modelName: "NOTHING EAR PC"
+                });
+
+                if (window.desktopAPI.onDeviceDetected) {
+                    window.desktopAPI.onDeviceDetected((data) => {
+                        const badge = document.getElementById("detected-text");
+                        if (badge && data?.displayName) {
+                            badge.innerText = "FOUND: " + data.displayName.toUpperCase();
+                            const name = data.displayName.toLowerCase();
+                            const selectEl = document.getElementById("model-select");
+                            if (selectEl) {
+                                if (name.includes('buds 2') || name.includes('cmf buds')) {
+                                    selectEl.value = "donphan";
+                                    localStorage.setItem("user_selected_model", "donphan");
+                                    localStorage.setItem("sku", "54");
+                                } else if (name.includes('pro 2')) {
+                                    selectEl.value = "espeon";
+                                    localStorage.setItem("user_selected_model", "espeon");
+                                    localStorage.setItem("sku", "76");
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        });
+
+        function openWidgetDirectly() {
+            if (window.desktopAPI) {
+                window.desktopAPI.showWidgetWindow();
+            } else {
+                alert("Widget mode is active in the standalone desktop app.");
+            }
+        }
+
+        async function startConnection() {
+            const selectEl = document.getElementById("model-select");
+            const selectedVal = selectEl.value;
+            const btnText = document.getElementById("connect-btn-text");
+
+            if (selectedVal !== "auto") {
+                localStorage.setItem("user_selected_model", selectedVal);
+                // Save SKU based on model
+                const modelSkuMap = {
+                    "donphan": "54",
+                    "espeon": "76",
+                    "twos": "61",
+                    "cleffa": "63",
+                    "two": "17",
+                    "sticks": "14",
+                    "flaaffy": "11200005",
+                    "corsola": "30",
+                    "one": "01"
+                };
+                localStorage.setItem("sku", modelSkuMap[selectedVal] || "54");
+            }
+
+            btnText.innerText = "CONNECTING...";
+            try {
+                if (typeof scanNewDevicesSerial === "function") {
+                    await scanNewDevicesSerial();
+                }
+            } catch (err) {
+                console.error("Connection error:", err);
+                btnText.innerText = "CONNECT EARBUDS";
+            }
+        }
+    </script>
+</body>
+
+</html>

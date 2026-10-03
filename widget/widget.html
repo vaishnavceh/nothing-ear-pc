@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Nothing Ear Widget</title>
+  <link rel="stylesheet" href="widget.css">
+</head>
+<body>
+  <div class="widget-card">
+    <!-- Header / Drag Handle -->
+    <div class="widget-header">
+      <div class="header-left">
+        <span class="status-dot" id="status-dot"></span>
+        <span class="device-title" id="device-title">NOTHING EAR</span>
+      </div>
+      <div class="header-actions">
+        <button id="pin-btn" class="icon-btn active" title="Toggle Always On Top">
+          <svg viewBox="0 0 24 24" width="13" height="13">
+            <path fill="currentColor" d="M16 12V4H17V2H7V4H8V12L5 15V17H11V22L12 23L13 22V17H19V15L16 12Z"/>
+          </svg>
+        </button>
+        <button id="expand-btn" class="icon-btn" title="Open Full Dashboard">
+          <svg viewBox="0 0 24 24" width="13" height="13">
+            <path fill="currentColor" d="M4 4H10V6H6V10H4V4M20 4V10H18V6H14V4H20M20 20H14V18H18V14H20V20M4 20V14H6V18H10V20H4Z"/>
+          </svg>
+        </button>
+        <button id="close-btn" class="icon-btn" title="Hide to Tray">
+          <svg viewBox="0 0 24 24" width="13" height="13">
+            <path fill="currentColor" d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Battery Indicators Row -->
+    <div class="battery-row">
+      <!-- Left Bud -->
+      <div class="battery-cell" id="cell-left">
+        <div class="cell-label">L</div>
+        <div class="cell-val" id="val-left">--</div>
+        <div class="bar-track">
+          <div class="bar-fill" id="bar-left" style="width: 0%;"></div>
+        </div>
+      </div>
+
+      <!-- Case -->
+      <div class="battery-cell" id="cell-case">
+        <div class="cell-label">CASE</div>
+        <div class="cell-val" id="val-case">--</div>
+        <div class="bar-track">
+          <div class="bar-fill" id="bar-case" style="width: 0%;"></div>
+        </div>
+      </div>
+
+      <!-- Right Bud -->
+      <div class="battery-cell" id="cell-right">
+        <div class="cell-label">R</div>
+        <div class="cell-val" id="val-right">--</div>
+        <div class="bar-track">
+          <div class="bar-fill" id="bar-right" style="width: 0%;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Controls: ANC & Dirac / Bass -->
+    <div class="controls-row">
+      <div class="anc-pills">
+        <button class="pill" id="anc-on" onclick="setANC(4)" title="Noise Cancellation">ANC</button>
+        <button class="pill" id="anc-trans" onclick="setANC(2)" title="Transparency">TRANS</button>
+        <button class="pill" id="anc-off" onclick="setANC(1)" title="ANC Off">OFF</button>
+      </div>
+      <div class="extra-pills">
+        <button class="pill eq-pill" id="eq-btn" onclick="cycleStudioEQ()" title="Cycle Equalizer Preset: Jazz, Rock, Classical, Romantic, Vocal...">
+          <span id="eq-name">DIRAC</span>
+        </button>
+        <button class="pill icon-pill" id="bass-btn" onclick="toggleBass()" title="Toggle Bass Boost">
+          BASS
+        </button>
+        <button class="pill reconnect-pill" id="connect-btn" onclick="openAndConnect()" title="Connect / Scan">
+          CONNECT
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="widget.js"></script>
+</body>
+</html>

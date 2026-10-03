@@ -1,0 +1,23 @@
+# Node & Electron dependencies
+node_modules/
+dist/
+build/
+electron/out/
+
+# IDE & OS files
+.vs/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Python & caches
+__pycache__/
+*.pyc
+*.spec
+devicesndpreferences.db
+main.py
+
+# Temp & logs
+*.log
+.gemini/
+.system_generated/

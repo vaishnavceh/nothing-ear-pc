@@ -1,0 +1,42 @@
+{
+  "name": "ear-pc-app",
+  "version": "1.0.0",
+  "description": "Nothing & CMF Earbuds PC Control Center & Desktop Widget",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder --win portable"
+  },
+  "keywords": [
+    "nothing",
+    "cmf",
+    "earbuds",
+    "bluetooth",
+    "widget",
+    "desktop"
+  ],
+  "author": "Ear PC Team",
+  "license": "GPL-3.0",
+  "devDependencies": {
+    "electron": "^33.2.1",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.nothing.ear.pc",
+    "productName": "Nothing Ear PC",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": "portable",
+      "icon": "res/icons/256x256.png"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "res/**/*",
+      "widget/**/*"
+    ]
+  }
+}
